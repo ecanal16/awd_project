@@ -1,3 +1,8 @@
+<script setup>
+import {ref} from 'vue';
+
+</script>
+
 <template>
 <div class="text-center">
     <div class="bg-red-300 text-center">
@@ -10,7 +15,7 @@
     </div>
     
     <ul class="flex flex-col">
-        <li class="bg-yellow-200 w-full mt-8 p-4">Starbucks House Blend Medium  7</li>
+        <li class="bg-yellow-200 w-full mt-8 p-4"></li>
     </ul>
    </div> 
 </template>
