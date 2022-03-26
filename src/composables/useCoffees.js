@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-const coffees = ref([
+export const coffees = ref([
         {
             Brand: "Starbucks",
             Name: "Colombian",
