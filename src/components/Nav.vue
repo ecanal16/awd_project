@@ -1,5 +1,5 @@
 <template>
-   <div class="bg-yellow-600">
+   <div class="bg-blue-900 text-white">
        <div class="container mx-auto flex justify-between items-center">
            <h1 class="text-3xl">Coffee Reviewer</h1>
            <nav>
