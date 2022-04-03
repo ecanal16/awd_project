@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import useAuth from "../composables/useAuth";
 
-const { isAuthenticated, login, signup } = useAuth();
+const { isAuthenticated, login, signup, googleLogin } = useAuth();
 
 const username = ref("");
 const password = ref("");
@@ -19,6 +19,12 @@ const signingUp = async () => {
     await signup(username.value, password.value);
     goToHome();
 };
+
+const google = async () => {
+    await googleLogin();
+    goToHome();
+};
+
 const goToHome = () => {
     if (isAuthenticated.value) {
         router.push("/");
@@ -37,6 +43,9 @@ const goToHome = () => {
             <button type="submit" @submit.prevent="loggingIn" class="bg-blue-900 text-white py-3 w-1/2 ">Login</button>
             <button @click="signingUp" class="bg-blue-900 text-white py-3 w-1/2 ">Sign Up</button>
             </div>
+        <button @click="google" class="bg-white rounded-xl p-1 flex justify-center hover:bg-blue-900">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="google logo">
+        </button>
         </form>
         </div>
     </div>

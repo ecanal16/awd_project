@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { firebaseAuth } from './useFirebase';
 
 const isAuthenticated = ref(false);
@@ -7,6 +7,15 @@ const isAuthenticated = ref(false);
 const user = ref("");
 
 const useAuth = () => {
+  const googleLogin = async () => {
+      const provider = new GoogleAuthProvider();
+      const credentials = await signInWithPopup(firebaseAuth, provider);
+      if (credentials.user) {
+        isAuthenticated.value = true;
+        user.value = credentials.user.email;
+    }
+ };
+
     const login = async (username, password) => {
        const credentials = await signInWithEmailAndPassword(firebaseAuth, username, password);
        if (credentials.user) {
@@ -29,6 +38,6 @@ const useAuth = () => {
         user.value = "";
     };
 
-    return { isAuthenticated, login, logout, signup, user};
+    return { isAuthenticated, login, logout, signup, user, googleLogin};
 };
 export default useAuth;
