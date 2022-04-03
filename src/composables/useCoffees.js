@@ -1,6 +1,20 @@
 import { ref, computed } from 'vue';
 
 export const coffees = ref([]);
+export let lNum = 0;
+export let mNum = 0;
+export let mdNum = 0;
+export let dNum = 0;
+
+let totalL = 0;
+let totalM = 0;
+let totalMD = 0;
+let totalD = 0;
+
+export let avglNum = 0;
+export let avgmNum = 0;
+export let avgmdNum = 0;
+export let avgdNum = 0;
 
 const useCoffees = () => {
     const testfun = (brand, cname, roast, rating) => {
@@ -9,10 +23,11 @@ const useCoffees = () => {
             Brand: brand.toUpperCase(),
             Name: cname,
             Roast: roast.toUpperCase(),
-            Rating: rating,
+            Rating: parseInt(rating),
             buyAgain: false,
         });
-        console.table(coffees.value);
+        console.table(coffees.value); 
+        roastNum(roast.toUpperCase(), parseInt(rating));
     };
 
     const buyAgainStatus = (id) => {
@@ -28,12 +43,39 @@ const useCoffees = () => {
       const buyAgainT = computed(() => {
         return coffees.value.filter(coffee => coffee.buyAgain)
       })
+
+      const roastNum = (roast, rating) => {
+        if (roast == 'L'){
+            lNum = lNum + 1;
+            totalL = totalL + rating
+            avglNum = totalL / lNum
+        } 
+        if (roast == 'M'){
+            mNum = mNum + 1;
+            totalM = totalM + rating
+            avgmNum = totalM / mNum
+        }
+        if (roast == 'MD'){
+            mdNum = mdNum + 1;
+            totalMD = totalMD + rating
+            avgmdNum = totalMD / mdNum
+        }
+        if (roast == 'D'){
+            dNum = dNum + 1;
+            totalD = totalD + rating
+            avgdNum = totalD / dNum
+        }
+    };
+     
     return {
         coffees,
         testfun,
         buyAgainStatus,
         buyAgainT,
-        buyAgainF
+        buyAgainF,
+        roastNum,
+        lNum, mNum, mdNum, dNum,
+        avglNum, avgmNum, avgmdNum, avgdNum
     }
 };
 export default useCoffees;
