@@ -1,12 +1,26 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useForm, useField } from 'vee-validate';
+import * as yup from 'yup';
+
+
 import useAuth from "../composables/useAuth";
+
+const schema = yup.object({
+    username: yup.string().required().email().label("Email"),
+    password: yup.string().required().min(8),
+});
+
+useForm({
+    validationSchema: schema,
+});
+
+const { value: username, errorMessage: emailError } = useField('username');
+const { value: password, errorMessage: passwordError } = useField('password');
 
 const { isAuthenticated, login, signup, googleLogin } = useAuth();
 
-const username = ref("");
-const password = ref("");
 
 const router = useRouter();
 
@@ -36,9 +50,11 @@ const goToHome = () => {
     <div class="flex flex-col items-center justify-center mt-20">
         <div class="flex rounded-lg justify-center items-center">
         <img class="h-72" src="../assets/loginC.jpeg" alt="coffee clipart">
-        <form @submit.prevent="loggingIn" class="flex flex-col space-y-7 p-4 bg-slate-600 h-72">
-            <input type="text" v-model="username" class="border-2 rounded-xl p-3" placeholder="Username"/>
-            <input type="password" v-model="password" class="border-2 rounded-xl p-3" placeholder="Password"/>
+        <form @submit.prevent="loggingIn" class="flex flex-col space-y-4 p-2 bg-slate-600 h-72">
+            <input name="username" type="text" v-model="username" class="border-2 rounded-xl p-3" placeholder="Email"/>
+             <span class="text-xs text-center text-red-500">{{ emailError }}</span>
+            <input name="password" type="password" v-model="password" class="border-2 rounded-xl p-3" placeholder="Password"/>
+             <span class="text-xs text-center text-red-500">{{ passwordError }}</span>
             <div class="flex space-x-2">
             <button type="submit" @submit.prevent="loggingIn" class="bg-blue-900 text-white py-3 w-1/2 ">Login</button>
             <button @click="signingUp" class="bg-blue-900 text-white py-3 w-1/2 ">Sign Up</button>
