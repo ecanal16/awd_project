@@ -3,9 +3,12 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-
-
 import useAuth from "../composables/useAuth";
+
+import { useAPI } from "../composables/useAPI";
+const { phrase, getQuote } = useAPI();
+
+
 
 const schema = yup.object({
     username: yup.string().required().email().label("Email"),
@@ -46,7 +49,6 @@ const goToHome = () => {
 };
 </script>
 <template>
-    <h1>Login page</h1>
     <div class="flex flex-col items-center justify-center mt-20">
         <div class="flex rounded-lg justify-center items-center">
         <img class="h-72" src="../assets/loginC.jpeg" alt="coffee clipart">
@@ -64,5 +66,7 @@ const goToHome = () => {
         </button>
         </form>
         </div>
+        <button class="bg-slate-500 rounded-3xl font-bold p-4 mt-10 w-1/3 hover:text-yellow-300" @Click="getQuote">Get Fun Fact</button>
+        <span class="text-white rounded-3xl p-4 mt-10 w-1/3 font-light italic" >{{phrase}}</span>
     </div>
 </template>
