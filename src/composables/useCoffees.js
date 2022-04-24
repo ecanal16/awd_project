@@ -16,6 +16,9 @@ export let avgmNum = 0;
 export let avgmdNum = 0;
 export let avgdNum = 0;
 
+export let obj = {};
+export let minobj = {};
+
 const useCoffees = () => {
     const testfun = (brand, cname, roast, rating) => {
         coffees.value.push({
@@ -26,8 +29,9 @@ const useCoffees = () => {
             Rating: parseInt(rating),
             buyAgain: false,
         });
-        console.table(coffees.value); 
         roastNum(roast.toUpperCase(), parseInt(rating));
+        obj = coffees.value.reduce((max, coffee) => max.Rating > coffee.Rating ? max : coffee);
+        minobj = coffees.value.reduce((min, coffee) => min.Rating < coffee.Rating ? min : coffee);
     };
 
     const buyAgainStatus = (id) => {
@@ -75,7 +79,8 @@ const useCoffees = () => {
         buyAgainF,
         roastNum,
         lNum, mNum, mdNum, dNum,
-        avglNum, avgmNum, avgmdNum, avgdNum
+        avglNum, avgmNum, avgmdNum, avgdNum, obj,
+        minobj,
     }
 };
 export default useCoffees;

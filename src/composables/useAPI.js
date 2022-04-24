@@ -10,7 +10,6 @@ const api = axios.create({
 export const useAPI = () => {
     const getQuote = async () => {
         const res = await api.get(`/fun/facts?num=1`);
-        console.log(res);
           phrase.value = res.data[0];
       };
       return { phrase, getQuote };
