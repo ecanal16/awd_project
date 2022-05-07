@@ -1,86 +1,116 @@
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
+import { collection, query, orderBy, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore'
+import { db } from './useFirebase'
+import { async } from '@firebase/util';
 
 export const coffees = ref([]);
-export let lNum = 0;
-export let mNum = 0;
-export let mdNum = 0;
-export let dNum = 0;
+export let lnum = 0;
+export let mnum = 0;
+export let mdnum = 0;
+export let dnum = 0;
 
-let totalL = 0;
-let totalM = 0;
-let totalMD = 0;
-let totalD = 0;
+export let lavg = 0;
+export let mavg = 0;
+export let mdavg = 0;
+export let davg = 0;
 
-export let avglNum = 0;
-export let avgmNum = 0;
-export let avgmdNum = 0;
-export let avgdNum = 0;
+let ltotal = 0;
+let mtotal = 0;
+let mdtotal = 0;
+let dtotal = 0;
 
-export let obj = {};
-export let minobj = {};
-
-const useCoffees = () => {
-    const testfun = (brand, cname, roast, rating) => {
-        coffees.value.push({
-            id: coffees.value.length,
-            Brand: brand.toUpperCase(),
-            Name: cname,
-            Roast: roast.toUpperCase(),
-            Rating: parseInt(rating),
-            buyAgain: false,
-        });
-        roastNum(roast.toUpperCase(), parseInt(rating));
-        obj = coffees.value.reduce((max, coffee) => max.Rating > coffee.Rating ? max : coffee);
-        minobj = coffees.value.reduce((min, coffee) => min.Rating < coffee.Rating ? min : coffee);
-    };
-
-    const buyAgainStatus = (id) => {
-        const coffee = coffees.value.find((coffee) => coffee.id === id);
-        coffee.buyAgain = !coffee.buyAgain;
-        console.table(coffees.value);
-    };
-
-    const buyAgainF = computed(() => {
-        return coffees.value.filter(coffee => !coffee.buyAgain)
-      })
-    
-      const buyAgainT = computed(() => {
-        return coffees.value.filter(coffee => coffee.buyAgain)
+ const useCoffees = () => {
+    const coffeesCollection = collection(db, 'coffees')
+    const coffeesQuery = query(coffeesCollection, orderBy('Rating', 'desc'))
+    const unsubscribe = onSnapshot(coffeesQuery, querySnapshot => {
+        coffees.value = []
+        querySnapshot.forEach(doc => {
+          coffees.value.push({ id: doc.id, ...doc.data() })
+          coffeeStats()
+        })
       })
 
-      const roastNum = (roast, rating) => {
-        if (roast == 'L'){
-            lNum = lNum + 1;
-            totalL = totalL + rating
-            avglNum = totalL / lNum
-        } 
-        if (roast == 'M'){
-            mNum = mNum + 1;
-            totalM = totalM + rating
-            avgmNum = totalM / mNum
-        }
-        if (roast == 'MD'){
-            mdNum = mdNum + 1;
-            totalMD = totalMD + rating
-            avgmdNum = totalMD / mdNum
-        }
-        if (roast == 'D'){
-            dNum = dNum + 1;
-            totalD = totalD + rating
-            avgdNum = totalD / dNum
-        }
-    };
-     
-    return {
-        coffees,
-        testfun,
-        buyAgainStatus,
-        buyAgainT,
-        buyAgainF,
-        roastNum,
-        lNum, mNum, mdNum, dNum,
-        avglNum, avgmNum, avgmdNum, avgdNum, obj,
-        minobj,
+      const sendCoffee = async coffee => {
+        await addDoc(coffeesCollection, {
+          Brand: coffee.brand,
+          Name: coffee.name,
+          Roast: coffee.roast,
+          Rating: coffee.rating,
+          BuyAgain: false,
+        })
     }
+
+    const buyAgainStatusT = async id => {
+      const coffeeRef = doc(db, "coffees", id);
+      await updateDoc(coffeeRef, {
+        BuyAgain: true
+      })
+      console.table(coffees.value)
+  };
+
+  const buyAgainStatusF = async id => {
+    const coffeeRef = doc(db, "coffees", id);
+    await updateDoc(coffeeRef, {
+      BuyAgain: false
+    })
+    console.table(coffees.value)
 };
-export default useCoffees;
+
+const buyAgain = computed(() => {
+  return coffees.value.filter(coffee => coffee.BuyAgain)
+})
+
+  const coffeeStats = () => {
+    const lightRoasts = computed(() => {
+      return coffees.value.filter(coffee => coffee.Roast == 'L')
+    })
+    const mediumRoasts = computed(() => {
+      return coffees.value.filter(coffee => coffee.Roast == 'M')
+    })
+    const medDarkRoasts = computed(() => {
+      return coffees.value.filter(coffee => coffee.Roast == 'MD')
+    })
+    const darkRoasts = computed(() => {
+      return coffees.value.filter(coffee => coffee.Roast == 'D')
+    })
+
+    lnum = 0;
+    ltotal = 0;
+    lightRoasts.value.forEach((coffee) => {
+      lnum += 1;
+      ltotal += coffee.Rating;
+      lavg = ltotal /lnum;
+    }) 
+
+    mnum = 0;
+    mtotal = 0;
+    mediumRoasts.value.forEach((coffee) => {
+      mnum += 1;
+      mtotal += coffee.Rating;
+      mavg = mtotal / mnum;
+    }) 
+
+    mdnum = 0;
+    mdtotal = 0;
+    medDarkRoasts.value.forEach((coffee) => {
+      mdnum += 1;
+      mdtotal += coffee.Rating;
+      mdavg =mdtotal /mdnum;
+    }) 
+
+    dnum = 0;
+    dtotal = 0;
+    darkRoasts.value.forEach((coffee) => {
+      dnum += 1;
+      dtotal += coffee.Rating;
+      davg = dtotal /dnum;
+    }) 
+
+  }
+
+      return { coffees, unsubscribe, sendCoffee, buyAgainStatusT, 
+        buyAgainStatusF, buyAgain,
+        lnum, mnum, mdnum, dnum, lavg, mavg, mdavg, davg }
+ }
+
+ export default useCoffees;

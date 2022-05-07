@@ -1,12 +1,13 @@
 <script setup>
-import {ref, computed} from 'vue';
+import { onUnmounted, ref } from 'vue'
 
-import {coffees} from '../composables/useCoffees';
+import useCoffees from '../composables/useCoffees';
 
-import useCoffees from '../composables/useCoffees.js';
+const { coffees, unsubscribe, buyAgainStatusT } = useCoffees()
 
-const { buyAgainStatus } = useCoffees();
-
+onUnmounted(() => {
+    unsubscribe()
+})
 </script>
 
 <template>
@@ -21,7 +22,7 @@ const { buyAgainStatus } = useCoffees();
     </div>
     
     <ul class="flex flex-col">
-        <li v-for="coffee in coffees" :key="coffee.id" @click="buyAgainStatus(coffee.id)" class="bg-blue-900 text-white w-full mt-8 p-4 hover:cursor-pointer hover:text-black hover:bg-blue-200">{{ coffee.Brand }} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; {{ coffee.Name }} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;{{ coffee.Roast }} &emsp; &emsp; &emsp; &emsp; &emsp;{{ coffee.Rating }}</li>
+        <li v-for="coffee in coffees" :key="coffee.id" @click="buyAgainStatusT(coffee.id)" class="bg-blue-900 text-white w-full mt-8 p-4 hover:cursor-pointer hover:text-black hover:bg-blue-200">{{ coffee.Brand }} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; {{ coffee.Name }} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;{{ coffee.Roast }} &emsp; &emsp; &emsp; &emsp; &emsp;{{ coffee.Rating }}</li>
     </ul>
    </div> 
 </template>
